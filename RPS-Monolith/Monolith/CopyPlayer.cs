@@ -1,4 +1,5 @@
 using Events;
+using Monitoring;
 
 namespace Monolith;
 
@@ -9,11 +10,15 @@ public class CopyPlayer : IPlayer
 
     public PlayerMovedEvent MakeMove(GameStartedEvent e)
     {
+
+
         Move move = Move.Paper;
         if (_previousMoves.Count > 2)
         {
             move = _previousMoves.Dequeue();
         }
+
+        MonitoringService.Log.Information("Player {PlayerId} Made move: {Move}", PlayerId, move);
 
         var moveEvent = new PlayerMovedEvent
         {

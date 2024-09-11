@@ -1,4 +1,5 @@
 using Events;
+using Monitoring;
 
 namespace Monolith;
 
@@ -7,16 +8,17 @@ public class Game
     private readonly Dictionary<Guid, GameModel?> _games = new();
     private readonly IPlayer _player1 = new RandomPlayer();
     private readonly IPlayer _player2 = new CopyPlayer();
-    
+
     public void Start()
     {
+        //using var activity = MonitoringService.ActivitySource.StartActivity("Start Game");
         Guid gameId = Guid.NewGuid();
-        _games.Add(gameId, new GameModel {GameId = gameId});
-        
+        _games.Add(gameId, new GameModel { GameId = gameId });
+
         var startEvent = new GameStartedEvent { GameId = gameId };
         var p1Event = _player1.MakeMove(startEvent);
         ReceivePlayerEvent(p1Event);
-        
+
         var p2Event = _player2.MakeMove(startEvent);
         ReceivePlayerEvent(p2Event);
     }
@@ -27,6 +29,7 @@ public class Game
 
         switch (p1.Value)
         {
+
             case Move.Rock:
                 winner = p2.Value switch
                 {
@@ -65,6 +68,7 @@ public class Game
                 game.Moves.Add(e.PlayerId, e.Move);
                 if (game.Moves.Values.Count == 2)
                 {
+
                     KeyValuePair<string?, Move> p1 = game.Moves.First()!;
                     KeyValuePair<string?, Move> p2 = game.Moves.Skip(1).First()!;
 
@@ -73,6 +77,7 @@ public class Game
                     _player2.ReceiveResult(finishedEvent);
 
                     _games.Remove(game.GameId);
+
                 }
             }
         }
@@ -80,12 +85,15 @@ public class Game
 
     public GameFinishedEvent PrepareWinnerAnnouncement(GameModel game, KeyValuePair<string?, Move> p1, KeyValuePair<string?, Move> p2)
     {
+
         var finishedEvent = new GameFinishedEvent
         {
             GameId = game.GameId,
             Moves = game.Moves,
             WinnerId = DeclareWinner(p1!, p2!)
         };
+
+        MonitoringService.Log.Information("Winner: {WinnerId} in Game: {GameId}", finishedEvent.WinnerId, finishedEvent.GameId);
         return finishedEvent;
     }
 }

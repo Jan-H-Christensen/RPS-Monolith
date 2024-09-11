@@ -1,4 +1,5 @@
 using Events;
+using Monitoring;
 
 namespace Monolith;
 
@@ -8,6 +9,7 @@ public class RandomPlayer : IPlayer
 
     public PlayerMovedEvent MakeMove(GameStartedEvent e)
     {
+
         var random = new Random();
         var next = random.Next(3);
         var move = next switch
@@ -16,6 +18,9 @@ public class RandomPlayer : IPlayer
             1 => Move.Paper,
             _ => Move.Scissor
         };
+
+        MonitoringService.Log.Information("Player {PlayerId} Made move: {Move}", PlayerId, move);
+
         return new PlayerMovedEvent
         {
             GameId = e.GameId,
