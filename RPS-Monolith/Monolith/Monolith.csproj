@@ -11,4 +11,11 @@
       <ProjectReference Include="..\Events\Events.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.9.0" />
+      <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.9.0" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+      <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
+    </ItemGroup>
+
 </Project>
